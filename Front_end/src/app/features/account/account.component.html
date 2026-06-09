@@ -1,0 +1,73 @@
+<section class="account-page">
+  <div class="account-shell">
+    <div class="status-banner" *ngIf="isLoading || apiError">
+      <p *ngIf="isLoading" class="status-banner__loading">Đang tải thông tin tài khoản...</p>
+      <p *ngIf="apiError" class="status-banner__error">{{ apiError }}</p>
+    </div>
+
+    <aside class="account-card account-card--profile">
+      <div class="profile-top">
+        <div class="profile-avatar">
+          <img
+            *ngIf="profile?.avatarUrl; else initialsAvatar"
+            [src]="profile?.avatarUrl"
+            [alt]="displayName"
+          />
+          <ng-template #initialsAvatar>{{ avatarLabel || 'U' }}</ng-template>
+        </div>
+
+        <div class="profile-meta">
+          <p class="eyebrow">Trang cá nhân</p>
+          <h1>{{ displayName }}</h1>
+          <p class="muted">{{ email }}</p>
+          <span class="role-badge" [class.role-badge--admin]="isAdmin">
+            {{ isAdmin ? 'Quản trị viên' : 'Khách hàng' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <div>
+          <span class="label">Số điện thoại</span>
+          <strong>{{ phone }}</strong>
+        </div>
+        <div>
+          <span class="label">Tài khoản từ</span>
+          <strong>{{ createdAt }}</strong>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <a routerLink="/cart" class="action-link">Đi đến giỏ hàng</a>
+      </div>
+    </aside>
+
+    <main class="account-content">
+      <section class="account-card">
+        <div class="section-heading">
+          <h3>Thông tin tài khoản</h3>
+          <span>Profile</span>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <span class="label">Họ tên</span>
+            <strong>{{ displayName }}</strong>
+          </div>
+          <div>
+            <span class="label">Email</span>
+            <strong>{{ email }}</strong>
+          </div>
+          <div>
+            <span class="label">Số điện thoại</span>
+            <strong>{{ phone }}</strong>
+          </div>
+          <div>
+            <span class="label">Vai trò</span>
+            <strong>{{ isAdmin ? 'Administrator' : 'Customer' }}</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</section>

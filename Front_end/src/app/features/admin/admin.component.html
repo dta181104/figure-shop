@@ -1,0 +1,219 @@
+<section class="admin-page">
+  <header class="admin-header">
+    <div>
+      <p class="eyebrow">Quản trị hệ thống</p>
+    </div>
+  </header>
+
+  <div *ngIf="forbiddenMessage" class="alert alert-error">{{ forbiddenMessage }}</div>
+
+  <ng-container *ngIf="!forbiddenMessage">
+    <nav class="admin-nav" aria-label="Admin modules">
+      <a routerLink="/admin/users" class="tab-btn" [class.active]="activeTab === 'users'">
+        Quản lý người dùng
+      </a>
+      <a routerLink="/admin/products" class="tab-btn" [class.active]="activeTab === 'products'">
+        Quản lý sản phẩm
+      </a>
+    </nav>
+
+    <div class="admin-grid" *ngIf="activeTab === 'users'">
+      <form class="card" (ngSubmit)="saveUser()">
+        <h3>{{ editingUserCode ? 'Cập nhật người dùng' : 'Tạo người dùng mới' }}</h3>
+
+        <label>
+          <span>Username</span>
+          <input
+            name="username"
+            [(ngModel)]="userForm.username"
+            [readonly]="!!editingUserCode"
+            required
+          />
+        </label>
+
+        <label *ngIf="!editingUserCode">
+          <span>Mật khẩu</span>
+          <input name="password" [(ngModel)]="userForm.password" type="password" required />
+        </label>
+
+        <label>
+          <span>Họ tên</span>
+          <input name="name" [(ngModel)]="userForm.name" />
+        </label>
+
+        <label>
+          <span>Email</span>
+          <input name="email" [(ngModel)]="userForm.email" type="email" />
+        </label>
+
+        <label>
+          <span>Số điện thoại</span>
+          <input name="phone" [(ngModel)]="userForm.phone" />
+        </label>
+
+        <label>
+          <span>Trạng thái</span>
+          <select name="status" [(ngModel)]="userForm.status">
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="INACTIVE">INACTIVE</option>
+          </select>
+        </label>
+
+        <div *ngIf="userError" class="alert alert-error">{{ userError }}</div>
+        <div *ngIf="userMessage" class="alert alert-success">{{ userMessage }}</div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="isSavingUser">
+            {{ isSavingUser ? 'Đang lưu...' : editingUserCode ? 'Cập nhật' : 'Tạo tài khoản' }}
+          </button>
+          <button type="button" class="btn-secondary" (click)="resetUserForm()">Đặt lại</button>
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Danh sách người dùng</h3>
+          <input
+            [(ngModel)]="userQuery"
+            name="userQuery"
+            placeholder="Tìm theo username, email, vai trò..."
+          />
+        </div>
+
+        <p class="muted" *ngIf="isUsersLoading">Đang tải dữ liệu người dùng...</p>
+        <p class="muted" *ngIf="!isUsersLoading && filteredUsers.length === 0">
+          Không có người dùng phù hợp.
+        </p>
+
+        <ul class="list" *ngIf="!isUsersLoading && filteredUsers.length > 0">
+          <li *ngFor="let user of filteredUsers">
+            <div>
+              <strong>{{ user.username || user.code }}</strong>
+              <p>{{ user.name || user.fullName || 'Chưa có tên' }}</p>
+              <small
+                >{{ user.email || 'Không có email' }} | {{ user.phone || 'Không có SĐT' }}</small
+              >
+              <div class="badge-group">
+                <span>{{ formatRoles(user.roles) }}</span>
+              </div>
+            </div>
+            <div class="inline-actions">
+              <button type="button" class="action-btn action-edit" (click)="editUser(user)">
+                Sửa
+              </button>
+              <button type="button" class="action-btn action-delete" (click)="deleteUser(user)">
+                Xóa
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="admin-grid" *ngIf="activeTab === 'products'">
+      <form class="card" (ngSubmit)="saveProduct()">
+        <h3>{{ editingProductCode ? 'Cập nhật sản phẩm' : 'Tạo sản phẩm mới' }}</h3>
+
+        <label>
+          <span>Tên sản phẩm</span>
+          <input name="productName" [(ngModel)]="productForm.name" required />
+        </label>
+
+        <label>
+          <span>Mô tả</span>
+          <textarea
+            name="productDescription"
+            [(ngModel)]="productForm.description"
+            rows="4"
+          ></textarea>
+        </label>
+
+        <label>
+          <span>Giá</span>
+          <input
+            name="productPrice"
+            type="number"
+            min="0"
+            [(ngModel)]="productForm.price"
+            required
+          />
+        </label>
+
+        <label>
+          <span>Số lượng</span>
+          <input name="productQuantity" type="number" min="0" [(ngModel)]="productForm.quantity" />
+        </label>
+
+        <label>
+          <span>Trạng thái</span>
+          <select name="productStatus" [(ngModel)]="productForm.status">
+            <option [ngValue]="1">Có sẵn</option>
+            <option [ngValue]="0">Ngừng bán</option>
+          </select>
+        </label>
+
+        <div *ngIf="productError" class="alert alert-error">{{ productError }}</div>
+        <div *ngIf="productMessage" class="alert alert-success">{{ productMessage }}</div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="isSavingProduct">
+            {{ isSavingProduct ? 'Đang lưu...' : editingProductCode ? 'Cập nhật' : 'Tạo sản phẩm' }}
+          </button>
+          <button type="button" class="btn-secondary" (click)="resetProductForm()">Đặt lại</button>
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Danh sách sản phẩm</h3>
+          <input
+            [(ngModel)]="productQuery"
+            name="productQuery"
+            placeholder="Tìm theo mã, tên, mô tả..."
+          />
+        </div>
+
+        <p class="muted" *ngIf="isProductsLoading">Đang tải dữ liệu sản phẩm...</p>
+        <p class="muted" *ngIf="!isProductsLoading && filteredProducts.length === 0">
+          Không có sản phẩm phù hợp.
+        </p>
+
+        <ul class="list" *ngIf="!isProductsLoading && filteredProducts.length > 0">
+          <li *ngFor="let product of filteredProducts">
+            <div>
+              <strong>{{ product.name }}</strong>
+              <p>Mã: {{ product.code || 'Chưa có mã' }}</p>
+              <small
+                >Giá: {{ product.price | number: '1.0-0' }} VNĐ | SL:
+                {{ product.quantity || 0 }}</small
+              >
+            </div>
+            <div class="inline-actions">
+              <button type="button" class="action-btn action-edit" (click)="editProduct(product)">
+                Sửa
+              </button>
+              <button
+                type="button"
+                class="action-btn action-delete"
+                (click)="deleteProduct(product)"
+              >
+                Xóa
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </ng-container>
+
+  <app-confirm-dialog
+    [visible]="confirmVisible"
+    [title]="confirmTitle"
+    [message]="confirmMessage"
+    [confirmText]="confirmText"
+    cancelText="Hủy"
+    [variant]="confirmVariant"
+    (confirm)="confirmActionNow()"
+    (cancel)="closeConfirm()"
+  ></app-confirm-dialog>
+</section>
