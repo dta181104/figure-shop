@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ProductItems } from '@/app/core/models/product-item.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
+  private http = inject(HttpClient);
   private cartKey = 'cart_items';
   private cartSubject = new BehaviorSubject<(ProductItems & { quantity?: number })[]>(
     this.getCart()
@@ -13,6 +15,16 @@ export class CartService {
   cart$ = this.cartSubject.asObservable();
 
   constructor() {}
+
+  /** Đồng bộ giỏ hàng lên server */
+  syncCartToServer(payload: any): Observable<any> {
+    return this.http.post<any>('cart-detail', payload);
+  }
+
+  /** Xóa giỏ hàng trên server */
+  clearCartOnServer(): Observable<any> {
+    return this.http.delete<any>('cart-detail');
+  }
 
   /** Lấy danh sách sản phẩm trong giỏ */
   getCart(): (ProductItems & { quantity?: number })[] {

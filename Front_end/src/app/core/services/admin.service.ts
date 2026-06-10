@@ -32,6 +32,10 @@ export class AdminService {
     return this.http.get<ApiResponse<AdminUser[]>>('admin/accounts');
   }
 
+  findAccount(code: string): Observable<ApiResponse<AdminUser>> {
+    return this.http.get<ApiResponse<AdminUser>>(`admin/find/${code}`);
+  }
+
   createAccount(payload: {
     username: string;
     password?: string;
