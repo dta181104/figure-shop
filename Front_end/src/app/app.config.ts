@@ -7,6 +7,12 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { customInterceptor } from '@/app/core/interceptor/custom.interceptor';
 import { importProvidersFrom } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { en_US, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { registerLocaleData } from '@angular/common';
+import en from '@angular/common/locales/en';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+registerLocaleData(en);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,5 +24,8 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([customInterceptor]) // gộp fetch + interceptor
     ),
     importProvidersFrom(FormsModule, ReactiveFormsModule),
+    provideNzI18n(en_US),
+    importProvidersFrom(FormsModule),
+    provideAnimationsAsync(),
   ],
 };

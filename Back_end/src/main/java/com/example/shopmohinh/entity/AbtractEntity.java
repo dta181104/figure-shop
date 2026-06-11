@@ -1,6 +1,10 @@
 package com.example.shopmohinh.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -20,5 +24,5 @@ public abstract class AbtractEntity {
     @Column(name = "UPDATED_BY")
     private String updatedBy;
     @Column(name = "DELETED")
-    private Boolean deleted = true;
+    private Boolean deleted = false;
 }

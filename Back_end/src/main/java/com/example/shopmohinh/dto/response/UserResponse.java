@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,6 +49,7 @@ public class UserResponse {
 
      String avatar;
 
-     Set<RoleResponse> roles;
+//     Set<RoleResponse> roles;
+     private List<RoleResponse> roles;
 
 }

@@ -4,15 +4,14 @@ import com.example.shopmohinh.dto.request.UserCreationRequest;
 import com.example.shopmohinh.dto.request.UserUpdateRequest;
 import com.example.shopmohinh.dto.response.ApiResponse;
 import com.example.shopmohinh.dto.response.UserResponse;
+import com.example.shopmohinh.dto.search.UserSearch;
 import com.example.shopmohinh.service.impl.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -30,7 +29,10 @@ public class AdminController {
     }
 
     @GetMapping("/accounts")
-    public ApiResponse<List<UserResponse>>getUsers() {
+    public ApiResponse<Page<UserResponse>> getUsers(
+            @RequestParam(value = "pageIndex", required = false, defaultValue = "1") int pageIndex,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+            @RequestParam(value = "keyword", required = false) String keyword) {
 //      SecurityContextHolder chứa user đang đăng nhập(Request)
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -42,8 +44,13 @@ public class AdminController {
 //      forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority())) duyệt qua từng quyền và ghi log tên của từng quyền đó
                 .forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getUsers())
+        UserSearch userSearch = new UserSearch();
+        userSearch.setPageIndex(pageIndex);
+        userSearch.setPageSize(pageSize);
+        userSearch.setKeyword(keyword);
+
+        return ApiResponse.<Page<UserResponse>>builder()
+                .result(userService.getUsers(userSearch))
                 .build();
     }
 

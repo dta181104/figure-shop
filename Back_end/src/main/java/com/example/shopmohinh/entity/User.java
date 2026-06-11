@@ -42,5 +42,6 @@ public class User extends AbtractEntity {
     private String avatar;
 
     @ManyToMany
+    @OrderBy("id ASC")
     private Set<Role> roles;
 }

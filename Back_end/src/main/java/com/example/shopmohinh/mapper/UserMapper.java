@@ -7,6 +7,8 @@ import com.example.shopmohinh.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 //báo cho Maptruct bt class này để sd trong spring
 @Mapper(componentModel = "spring")
@@ -14,7 +16,9 @@ public interface UserMapper {
     @Mapping(target = "roles",ignore = true)
     User toUser(UserCreationRequest request);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "roles",ignore = true)
+    @Mapping(target = "pass", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 
     //      Map email với phone

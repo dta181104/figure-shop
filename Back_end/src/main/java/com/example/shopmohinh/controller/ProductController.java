@@ -5,11 +5,12 @@ import com.example.shopmohinh.dto.response.ApiResponse;
 import com.example.shopmohinh.dto.response.ProductResponse;
 import com.example.shopmohinh.dto.search.ProductSearch;
 import com.example.shopmohinh.service.impl.ProductService;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/product")
@@ -26,9 +27,30 @@ public class ProductController {
     }
 
     @GetMapping
-    public ApiResponse<Page<ProductResponse>> getAll(@NonNull ProductSearch request){
+    public ApiResponse<Page<ProductResponse>> getAll(
+            @RequestParam(value = "pageIndex", required = false, defaultValue = "1") int pageIndex,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @RequestParam(value = "sortDirection", required = false) String sortDirection,
+            @RequestParam(value = "deleted", required = false) Boolean deleted
+    ){
+        ProductSearch productSearch = new ProductSearch();
+        productSearch.setPageIndex(pageIndex);
+        productSearch.setPageSize(pageSize);
+        productSearch.setKeyword(keyword);
+        productSearch.setMinPrice(minPrice);
+        productSearch.setMaxPrice(maxPrice);
+        productSearch.setCategoryId(categoryId);
+        productSearch.setSortBy(sortBy);
+        productSearch.setSortDirection(sortDirection);
+        productSearch.setDeleted(deleted);
+
         return ApiResponse.<Page<ProductResponse>>builder()
-                .result(productService.getProduct(request))
+                .result(productService.getProduct(productSearch))
                 .build();
     }
     @GetMapping("/{id}")

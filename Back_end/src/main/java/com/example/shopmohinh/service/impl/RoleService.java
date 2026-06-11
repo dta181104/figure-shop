@@ -16,6 +16,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,7 @@ public class RoleService {
         return userMapper.toUserResponse(user);
     }
 
+    @PreAuthorize("hasAuthority('CREATE_ROLE')")
     public RoleResponse create(RoleRequest request){
         var role = roleMapper.toRole(request);
 
@@ -72,15 +75,18 @@ public class RoleService {
     }
 
 
+    @PreAuthorize("hasAuthority('SHOW_ROLE')")
     public List<RoleResponse> getAll(){
-        var roles = roleRepository.findAll();
+        var roles = roleRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         return roles.stream().map(roleMapper::toRoleResponse).toList();
     }
 
+    @PreAuthorize("hasAuthority('DELETE_ROLE')")
     public void delete(Long id){
         roleRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_ROLE')")
     public RoleResponse roleUpdate(Long roleId, RoleRequest request) {
         Role role = roleRepository.findById(roleId).
                 orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

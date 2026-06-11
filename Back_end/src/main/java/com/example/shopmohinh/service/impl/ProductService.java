@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -48,6 +49,7 @@ public class ProductService {
 
 
     @Transactional
+    @PreAuthorize("hasAuthority('CREATE_PRODUCT')")
     public ProductResponse create(ProductRequest request) {
 
         Product product = productMapper.toProduct(request);
@@ -93,6 +95,7 @@ public class ProductService {
         imageRepository.saveAll(images);
     }
 
+    @PreAuthorize("hasAuthority('SHOW_PRODUCT')")
     public Page<ProductResponse> getProduct(@NonNull ProductSearch request) {
 
         Pageable pageable = PageRequest.of(request.getPageIndex() - 1, request.getPageSize());
@@ -102,6 +105,7 @@ public class ProductService {
         return products.map(ProductResponse::new);
     }
 
+    @PreAuthorize("hasAuthority('SHOW_PRODUCT')")
     public ProductResponse getDetailProduct(Long id) {
 
         Product product = productRepository.findById(id)
@@ -120,6 +124,7 @@ public class ProductService {
         return response;
     }
 
+    @PreAuthorize("hasAuthority('DELETE_PRODUCT')")
     public ProductResponse delete(String code) {
         Product product = productRepository.findByCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -133,6 +138,7 @@ public class ProductService {
 
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_PRODUCT')")
     public ProductResponse update(String code, ProductRequest request) {
         Product product = productRepository.findByCode(code).
                 orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

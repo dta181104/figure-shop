@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -14,10 +14,24 @@ export type AdminUser = {
   roles?: Array<string | { code?: string; name?: string }>;
 };
 
-type ApiResponse<T> = {
+export type ApiResponse<T> = {
   result?: T;
   code?: number;
   message?: string;
+};
+
+export type PaginatedResult<T> = {
+  content: T[];
+  pageable?: any;
+  totalPages?: number;
+  totalElements?: number;
+  last?: boolean;
+  size?: number;
+  number?: number;
+  sort?: any;
+  numberOfElements?: number;
+  first?: boolean;
+  empty?: boolean;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -28,8 +42,15 @@ export class AdminService {
     return this.http.get<ApiResponse<any>>('users/myInfo');
   }
 
-  getAccounts(): Observable<ApiResponse<AdminUser[]>> {
-    return this.http.get<ApiResponse<AdminUser[]>>('admin/accounts');
+  getAccounts(pageIndex: number = 1, pageSize: number = 20, keyword?: string): Observable<ApiResponse<PaginatedResult<AdminUser>>> {
+    let params = new HttpParams()
+      .set('pageIndex', pageIndex.toString())
+      .set('pageSize', pageSize.toString());
+      
+    if (keyword) {
+      params = params.set('keyword', keyword);
+    }
+    return this.http.get<ApiResponse<PaginatedResult<AdminUser>>>('admin/accounts', { params });
   }
 
   findAccount(code: string): Observable<ApiResponse<AdminUser>> {

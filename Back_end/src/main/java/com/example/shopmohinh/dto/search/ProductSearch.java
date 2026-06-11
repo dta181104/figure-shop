@@ -8,15 +8,29 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class ProductSearch extends SearchDto {
-    String code = null;
+    private String code = null;
 
-    String name = null;
+    private String name = null;
 
-    int status;
+    private int status;
 
-    Double height;
+    private Double height;
 
-    Double weight;
+    private Double weight;
 
-    BigDecimal price;
+    private BigDecimal price;
+
+    private String keyword;
+
+    private BigDecimal minPrice;
+
+    private BigDecimal maxPrice;
+
+    private Long categoryId;
+
+    private String sortBy;
+
+    private String sortDirection;
+
+    private Boolean deleted;
 }
